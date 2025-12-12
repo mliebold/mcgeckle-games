@@ -1,5 +1,11 @@
+import { ThemeProvider } from "./components/theme-provider";
+
 function App() {
-  return <h1> Mcgeckle Games</h1>;
+  return (
+    <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
+      <h1> Mcgeckle Games</h1>
+    </ThemeProvider>
+  );
 }
 
 export default App;
