@@ -32,7 +32,8 @@ export function GameCanvas({ mode = "normal" }: GameCanvasProps) {
   );
   const [streak, setStreak] = useState(0);
 
-  const { recordResult } = useGameStore();
+  const { recordResult, pendingRestart, confirmRestartHandled, setStatus } =
+    useGameStore();
 
   const drawFrame = useCallback(() => {
     const canvas = canvasRef.current;
@@ -182,6 +183,16 @@ export function GameCanvas({ mode = "normal" }: GameCanvasProps) {
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [handleStop, startRun, state]);
+
+  useEffect(() => {
+    setStatus(state);
+  }, [setStatus, state]);
+
+  useEffect(() => {
+    if (!pendingRestart) return;
+    confirmRestartHandled();
+    startRun();
+  }, [confirmRestartHandled, pendingRestart, startRun]);
 
   useEffect(() => () => stopLoop(), [stopLoop]);
 

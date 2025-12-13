@@ -10,10 +10,13 @@ type GameState = {
   lastResult: RunResult | null;
   bestStreak: number;
   session: UserSession | null;
+  pendingRestart: boolean;
   setStatus: (status: GameStatus) => void;
   setSession: (session: UserSession | null) => void;
   recordResult: (result: RunResult) => void;
   hydrateFromStorage: () => void;
+  requestRestart: () => void;
+  confirmRestartHandled: () => void;
 };
 
 export const useGameStore = create<GameState>((set) => ({
@@ -21,6 +24,7 @@ export const useGameStore = create<GameState>((set) => ({
   lastResult: null,
   bestStreak: 0,
   session: null,
+  pendingRestart: false,
   setStatus: (status) => set({ status }),
   setSession: (session) => set({ session }),
   recordResult: (result) =>
@@ -36,4 +40,10 @@ export const useGameStore = create<GameState>((set) => ({
     const stored = Number(localStorage.getItem(BEST_KEY) ?? "0");
     set({ bestStreak: Number.isFinite(stored) ? stored : 0 });
   },
+  requestRestart: () =>
+    set(() => ({
+      pendingRestart: true,
+      status: "idle",
+    })),
+  confirmRestartHandled: () => set({ pendingRestart: false }),
 }));
