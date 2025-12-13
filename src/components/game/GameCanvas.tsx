@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { RunMode, RunResult } from "../../lib/types";
+import type { RunMode } from "../../lib/types";
 import {
   defaultConfig,
   inZone,
@@ -8,22 +8,15 @@ import {
   type StepConfig,
   type Target,
 } from "./game-logic";
+import { useGameStore } from "../../state/useGameStore";
 
 type GameCanvasProps = {
   mode?: RunMode;
-  resetToken: boolean;
-  onResetTokenUse: (state: boolean) => void;
-  onRunEnd?: (result: RunResult) => void;
-  onStreakPreview?: (score: number) => void;
 };
 
 const CANVAS_HEIGHT = 160;
 
-export function GameCanvas({
-  mode = "normal",
-  onRunEnd,
-  onStreakPreview,
-}: GameCanvasProps) {
+export function GameCanvas({ mode = "normal" }: GameCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const rafRef = useRef<number | null>(null);
   const lastTsRef = useRef<number>(0);
@@ -38,6 +31,8 @@ export function GameCanvas({
     randomTarget(defaultConfig.targetWidth),
   );
   const [streak, setStreak] = useState(0);
+
+  const { recordResult } = useGameStore();
 
   const drawFrame = useCallback(() => {
     const canvas = canvasRef.current;
@@ -134,24 +129,21 @@ export function GameCanvas({
       targetRef.current = nextTarget;
 
       setStreak(nextStreak);
-      // setCurrentConfig(updatedConfig);
       setTarget(nextTarget);
-
-      onStreakPreview?.(nextStreak);
       return;
     }
 
     stopLoop();
     setState("ended");
 
-    onRunEnd?.({
+    recordResult({
       score: streak,
       mode,
       runLength: streakRef.current,
       targetWidth: configRef.current.targetWidth,
       timestamp: Date.now(),
     });
-  }, [mode, target, streak, onRunEnd, onStreakPreview, stopLoop]);
+  }, [mode, target, streak, recordResult, stopLoop]);
 
   const resizeCanvas = useCallback(() => {
     const canvas = canvasRef.current;
@@ -180,10 +172,10 @@ export function GameCanvas({
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.code === "Space" || e.key === " " || e.key === "Enter") {
         e.preventDefault();
-        if (state === "idle") {
-          startRun();
-        } else {
+        if (state === "running") {
           handleStop();
+        } else {
+          startRun();
         }
       }
     };
@@ -212,8 +204,8 @@ export function GameCanvas({
       <div
         className="relative w-full cursor-pointer overflow-hidden rounded-lg border border-slate-200 bg-slate-900 shadow-inner dark:border-slate-800"
         onClick={() => {
-          if (state === "idle") startRun();
-          else handleStop();
+          if (state === "running") handleStop();
+          else startRun();
         }}
       >
         {state === "idle" ? (

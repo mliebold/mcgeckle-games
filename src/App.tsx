@@ -1,31 +1,20 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import GameCanvas from "./components/game/GameCanvas";
 import GameResult from "./components/game/GameResult";
 import Leaderboard from "./components/leaderboard/Leaderboard";
 import Layout from "./components/ui/layout";
 import { ThemeProvider } from "./components/theme-provider";
 import { bootstrapSession } from "./lib/auth";
-import type { RunResult, UserSession } from "./lib/types";
+import { useGameStore } from "./state/useGameStore";
 
 function App() {
-  const [session, setSession] = useState<UserSession | null>(null);
-  const [lastResult, setLastResult] = useState<RunResult | null>(null);
-  const [bestStreak, setBestStreak] = useState(0);
-  const [resetToken, setResetToken] = useState(false);
+  const { session, setSession, lastResult, bestStreak, hydrateFromStorage } =
+    useGameStore();
 
   useEffect(() => {
+    hydrateFromStorage();
     bootstrapSession().then(setSession);
-    const storedBest = localStorage.getItem("mcgeckle-best");
-    if (storedBest) setBestStreak(Number(storedBest));
-  }, []);
-
-  const handleRunEnd = (result: RunResult) => {
-    setLastResult(result);
-    if (result.score > bestStreak) {
-      localStorage.setItem("mcgeckle-best", String(bestStreak));
-      setBestStreak(result.score);
-    }
-  };
+  }, [hydrateFromStorage, setSession]);
 
   return (
     <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
@@ -43,14 +32,12 @@ function App() {
                 Each success makes the bar and target smaller. Space or click to
                 stop. Submit your best and climb the board.
               </p>
+              <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/70 px-3 py-1 text-sm font-semibold text-slate-700 dark:border-slate-700 dark:bg-slate-800/70 dark:text-slate-200">
+                Local best streak: {bestStreak}
+              </div>
             </div>
 
-            <GameCanvas
-              mode="normal"
-              resetToken={resetToken}
-              onResetTokenUse={setResetToken}
-              onRunEnd={handleRunEnd}
-            />
+            <GameCanvas mode="normal" />
 
             {lastResult ? <GameResult result={lastResult} /> : null}
           </div>
