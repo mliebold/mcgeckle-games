@@ -171,7 +171,7 @@ export function GameCanvas({ mode = "normal" }: GameCanvasProps) {
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.code === "Space" || e.key === " " || e.key === "Enter") {
+      if (e.code === "Space" || e.key === " ") {
         e.preventDefault();
         if (state === "running") {
           handleStop();
@@ -207,22 +207,16 @@ export function GameCanvas({ mode = "normal" }: GameCanvasProps) {
         </div>
         <div className="flex items-center gap-2">
           <span className="rounded bg-emerald-100 px-2 py-1 text-xs font-medium text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-200">
-            Space / click to stop
+            Space to start/stop
           </span>
         </div>
       </div>
 
-      <div
-        className="relative w-full cursor-pointer overflow-hidden rounded-lg border border-slate-200 bg-slate-900 shadow-inner dark:border-slate-800"
-        onClick={() => {
-          if (state === "running") handleStop();
-          else startRun();
-        }}
-      >
+      <div className="relative w-full overflow-hidden rounded-lg border border-slate-200 bg-slate-900 shadow-inner dark:border-slate-800">
         {state === "idle" ? (
           <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center">
             <div className="rounded-full bg-white/10 px-4 py-2 text-sm font-medium text-white ring-1 ring-white/30">
-              Click or press space to start
+              Press space to start
             </div>
           </div>
         ) : null}

@@ -49,8 +49,7 @@ function App() {
                 Controls
               </div>
               <ul className="space-y-1">
-                <li>Space / Enter — stop the bar</li>
-                <li>Click canvas — stop or start</li>
+                <li>Space — start and stop</li>
                 <li>Retry button after a miss</li>
               </ul>
             </div>
