@@ -1,0 +1,32 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "mcgeckle-games-worker",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-12-13",
+  "workers_dev": true
+  //   "route": {
+  //     "pattern": "example.org/**",
+  //     "zone_name": "example.org"
+  //   },
+  //   "kv_namespaces": [
+  //     {
+  //       "binding": "DB",
+  //       "id": "your-kv-namespace-id"
+  //     }
+  //   ],
+  //   "env": {
+  //     "staging": {
+  //       "name": "mcgeckle-games-worker-staging",
+  //       "route": {
+  //         "pattern": "staging.mcgeckle-games.org/**",
+  //         "zone_name": "mcgeckle-games.org"
+  //       },
+  //       "kv_namespaces": [
+  //         {
+  //           "binding": "DB",
+  //           "id": "your-staging-kv-namespace-id"
+  //         }
+  //       ]
+  //     }
+  //   }
+}
